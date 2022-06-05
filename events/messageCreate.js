@@ -7,6 +7,7 @@
 // Declares constants (destructured) to be used in this file.
 
 const { Collection } = require("discord.js");
+const { replyMessage } = require("../commands/utils/messages");
 const { prefix, owner } = require("../config.json");
 
 // Prefix regex, we will use to match in mention prefix.
@@ -113,8 +114,20 @@ module.exports = {
 			});
 		}
 
-		// Author perms property
+		// Author roles property
+		if (command.roles_permission) {
+			const userHasPermission = message.member.roles.cache.some(userRole => {
+				const indexOf = command.roles_permission.indexOf(userRole.id)
+			
+				return indexOf !== -1
+			})
 
+			if(!userHasPermission) {
+				return message.reply({ content: "You can not do this!" });
+			}
+		}
+
+		// Author perms property
 		if (command.permissions) {
 			const authorPerms = message.channel.permissionsFor(message.author);
 			if (!authorPerms || !authorPerms.has(command.permissions)) {
@@ -166,12 +179,14 @@ module.exports = {
 
 		// execute the final command. Put everything above this.
 		try {
-			command.execute(message, args);
+			await command.execute(message, args);
+			setTimeout(() => {
+				message.delete()
+			}, 30000)
 		} catch (error) {
 			console.error(error);
-			message.reply({
-				content: "There was an error trying to execute that command!",
-			});
+			
+			return replyMessage(message, replyOptions, 30000)
 		}
 	},
 };

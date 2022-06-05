@@ -67,18 +67,21 @@ client.triggers = new Collection();
  * @description All command categories aka folders.
  */
 
-const commandFolders = fs.readdirSync("./commands");
+const commandFolders = fs.readdirSync("./commands/misc");
 
 // Loop through all files and store commands in commands collection.
 
 for (const folder of commandFolders) {
 	const commandFiles = fs
-		.readdirSync(`./commands/${folder}`)
-		.filter((file) => file.endsWith(".js"));
-	for (const file of commandFiles) {
-		const command = require(`./commands/${folder}/${file}`);
+		.readdirSync(`./commands/misc/${folder}`)
+		// .filter((file) => file.endsWith(".js"));
+		
+		console.log({
+			filename: `./commands/misc/${folder}`
+		})
+
+		const command = require(`./commands/misc/${folder}`);
 		client.commands.set(command.name, command);
-	}
 }
 
 /**********************************************************************/
